@@ -2,7 +2,7 @@ const { linkSync, link } = require("fs");
 const ObjectsToCsv = require("objects-to-csv");
 const puppeteer = require("puppeteer");
 const cliProgress = require("cli-progress");
-const { info } = require("console");
+const moment = require("moment");
 
 const keySelectorPairs = {
    uni: "div.OrganisationName > h2",
@@ -35,9 +35,9 @@ const hrefPairs = {
 };
 const datePairs = {
    applyBy:
-      "#QuickFacts > div > div:nth-child(3) > div > div.LabelContainer > div.Title > div > div:nth-child(1) > time",
+      "#QuickFacts > div > div:nth-child(3) > div > div.LabelContainer > div.Title > div > div:nth-child(1):not(.Hidden) > time",
    startDate:
-      "#QuickFacts > div > div:nth-child(4) > div > div.LabelContainer > div.Title > div > div:nth-child(1) > time",
+      "#QuickFacts > div > div:nth-child(4) > div > div.LabelContainer > div.Title > div > div:nth-child(1):not(.Hidden) > time",
 };
 
 const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
@@ -45,23 +45,26 @@ const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 (async () => {
    const browser = await puppeteer.launch();
    const page = await browser.newPage();
-   page.setViewport({ width: 1920, height: 3000 });
+   page.setViewport({ width: 1000, height: 2000 });
    await page.goto(
-      "https://www.mastersportal.com/search/#q=di-4|lv-master|rg-1|tc-EUR|tr-[0,500]&start=00"
+      "https://www.mastersportal.com/search/#q=di-4|lv-master&start=00"
    );
+   await page.waitForSelector("div.ResultsNum");
    const links = [];
    const max = Number(
-      await page.$eval("div.ResultsNum", (text) =>
-         text.innerText.trim().split(" ").pop()
-      )
+      await page.$eval("div.ResultsNum", (text) => {
+         let res = text.innerText.trim().split(" ").pop();
+         return res.replace(",", "").replace(".", "");
+      })
    );
 
    console.log("Fetching links");
    bar1.start(max, 0);
    for (i = 0; i < max; i += 10) {
       bar1.increment(10);
-      const url = `https://www.mastersportal.com/search/#q=di-4|lv-master|rg-1|tc-EUR|tr-[0,500]&start=${i}`;
+      const url = `https://www.mastersportal.com/search/#q=di-4|lv-master&start=${i}`;
       await page.goto(url);
+      await page.waitForSelector("a.Result");
       links.push(
          ...(await page.$$eval("a.Result", (arr) =>
             arr.map((res) => {
@@ -105,7 +108,7 @@ const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
       for (let info in datePairs) {
          if (!!(await page.$(datePairs[info]))) {
             record[info] = await page.$eval(datePairs[info], (res) =>
-               res.getAttribute("datetime")
+               moment(res.getAttribute("datetime")).format("DD.MM.YYYY")
             );
          } else {
             record[info] = ".";
