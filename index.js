@@ -2,7 +2,6 @@ const { linkSync, link } = require("fs");
 const ObjectsToCsv = require("objects-to-csv");
 const puppeteer = require("puppeteer");
 const cliProgress = require("cli-progress");
-const moment = require("moment");
 
 const keySelectorPairs = {
    uni: "div.OrganisationName > h2",
@@ -42,105 +41,103 @@ const datePairs = {
 
 const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
+// No budget constraint
+// const starturl = "https://www.mastersportal.com/search/#q=di-4|lv-master&start="
 // Free
-const starturl = "https://www.mastersportal.com/search/#q=di-4|lv-master|tr-[0,500]&start="(
-   // No budget constraint
-   // const starturl = "https://www.mastersportal.com/search/#q=di-4|lv-master&start="
+const starturl =
+   "https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR|tr-[0,500]&start=";
 
-   async () => {
-      const browser = await puppeteer.launch();
-      const page = await browser.newPage();
-      page.setViewport({ width: 1000, height: 1000 });
-      await page.goto(starturl + "00");
-      await page.waitForSelector("div.ResultsNum");
-      const links = [];
-      const max = Number(
-         await page.$eval("div.ResultsNum", (text) => {
-            let res = text.innerText.trim().split(" ").pop();
-            return res.replace(",", "").replace(".", "");
-         })
+(async () => {
+   const browser = await puppeteer.launch({ headless: true });
+   const page = await browser.newPage();
+   page.setViewport({ width: 1000, height: 1000 });
+   await page.goto(starturl + "00");
+   await page.waitForSelector("div.ResultsNum");
+   const links = [];
+   const max = Number(
+      await page.$eval("div.ResultsNum", (text) => {
+         let res = text.innerText.trim().split(" ").pop();
+         return res.replace(",", "").replace(".", "");
+      })
+   );
+
+   console.log("Fetching links");
+   bar1.start(max, 0);
+   for (i = 0; i < max; i += 10) {
+      bar1.increment(10);
+      const url = `https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR|tr-[0,500]&start=${i}`;
+      await page.goto(url);
+      await page.waitForSelector("a.Result");
+      links.push(
+         ...(await page.$$eval("a.Result", (arr) =>
+            arr.map((res) => {
+               return { link: res.href };
+            })
+         ))
       );
+   }
+   bar1.stop();
+   const data = [];
 
-      console.log("Fetching links");
-      bar1.start(max, 0);
-      for (i = 0; i < max; i += 10) {
-         bar1.increment(10);
-         const url = `https://www.mastersportal.com/search/#q=di-4|lv-master&start=${i}`;
-         await page.goto(url);
-         await page.waitForSelector("a.Result");
-         links.push(
-            ...(await page.$$eval("a.Result", (arr) =>
-               arr.map((res) => {
-                  return { link: res.href };
-               })
-            ))
-         );
-      }
-      bar1.stop();
-      const data = [];
+   console.log("Scraping data");
+   bar1.start(links.length, 0);
+   for (prog of links) {
+      bar1.increment();
+      await page.goto(prog.link);
+      let record = { platformLink: prog.link };
 
-      console.log("Scraping data");
-      bar1.start(links.length, 0);
-      for (prog of links) {
-         bar1.increment();
-         await page.goto(prog.link);
-         let record = { platformLink: prog.link };
-
-         // Regular innerText values
-         for (let info in keySelectorPairs) {
-            if (await page.$(keySelectorPairs[info])) {
-               record[info] = await page.$eval(
-                  keySelectorPairs[info],
-                  (res) => res.innerText
-               );
-            } else {
-               record[info] = ".";
-            }
-         }
-
-         // Href values
-         for (let info in hrefPairs) {
-            if (await page.$(hrefPairs[info])) {
-               record[info] = await page.$eval(
-                  hrefPairs[info],
-                  (res) => res.href
-               );
-            } else {
-               record[info] = ".";
-            }
-         }
-
-         // Date values
-         for (let info in datePairs) {
-            if (!!(await page.$(datePairs[info]))) {
-               record[info] = await page.$eval(datePairs[info], (res) =>
-                  moment(res.getAttribute("datetime")).format("DD.MM.YYYY")
-               );
-            } else {
-               record[info] = ".";
-            }
-         }
-
-         // Misc manual cases
-         if (
-            !!(await page.$(
-               "#StudyKeyFacts > article.FactItem.Disciplines > a.TextOnly:not(.LandingPageLink)"
-            ))
-         ) {
-            record.disciplines = await page.$$eval(
-               "#StudyKeyFacts > article.FactItem.Disciplines > a.TextOnly:not(.LandingPageLink)",
-               (res) => res.map((r) => r.innerText).join(", ")
+      // Regular innerText values
+      for (let info in keySelectorPairs) {
+         if (await page.$(keySelectorPairs[info])) {
+            record[info] = await page.$eval(
+               keySelectorPairs[info],
+               (res) => res.innerText
             );
          } else {
-            record.disciplines = ".";
+            record[info] = ".";
          }
-         data.push(record);
       }
 
-      bar1.stop();
+      // Href values
+      for (let info in hrefPairs) {
+         if (await page.$(hrefPairs[info])) {
+            record[info] = await page.$eval(hrefPairs[info], (res) => res.href);
+         } else {
+            record[info] = ".";
+         }
+      }
 
-      await browser.close();
-      const csv = new ObjectsToCsv(data);
-      await csv.toDisk("./data.csv");
+      // Date values
+      for (let info in datePairs) {
+         if (!!(await page.$(datePairs[info]))) {
+            record[info] = await page.$eval(datePairs[info], (res) => {
+               let date = new Date(res.getAttribute("datetime"));
+               return date.toLocaleDateString("German");
+            });
+         } else {
+            record[info] = ".";
+         }
+      }
+
+      // Misc manual cases
+      if (
+         !!(await page.$(
+            "#StudyKeyFacts > article.FactItem.Disciplines > a.TextOnly:not(.LandingPageLink)"
+         ))
+      ) {
+         record.disciplines = await page.$$eval(
+            "#StudyKeyFacts > article.FactItem.Disciplines > a.TextOnly:not(.LandingPageLink)",
+            (res) => res.map((r) => r.innerText).join(", ")
+         );
+      } else {
+         record.disciplines = ".";
+      }
+      data.push(record);
    }
-)();
+
+   bar1.stop();
+
+   await browser.close();
+   const csv = new ObjectsToCsv(data);
+   await csv.toDisk("./data.csv");
+})();
