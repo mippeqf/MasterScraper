@@ -25,6 +25,8 @@ const keySelectorPairs = {
       "#OrganisationInformation > header > span > div > span > a:nth-child(1)",
    country:
       "#OrganisationInformation > header > span > div > span > a:nth-child(3)",
+   english: "#EnglishRequirements > section",
+   academic: "#AcademicRequirements > section",
 };
 
 const hrefPairs = {
