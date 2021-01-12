@@ -1,4 +1,3 @@
-const { linkSync, link } = require("fs");
 const ObjectsToCsv = require("objects-to-csv");
 const puppeteer = require("puppeteer");
 const cliProgress = require("cli-progress");
@@ -34,9 +33,9 @@ const hrefPairs = {
 };
 const datePairs = {
    applyBy:
-      "#QuickFacts > div > div:nth-child(3) > div > div.LabelContainer > div.Title > div > div:nth-child(1):not(.Hidden) > time",
+      "#QuickFacts > div > div:nth-child(3) > div > div.LabelContainer > div.Title > div > div:not(.Hidden) > time",
    startDate:
-      "#QuickFacts > div > div:nth-child(4) > div > div.LabelContainer > div.Title > div > div:nth-child(1):not(.Hidden) > time",
+      "#QuickFacts > div > div:nth-child(4) > div > div.LabelContainer > div.Title > div > div:not(.Hidden) > time",
 };
 
 const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
