@@ -25,8 +25,14 @@ const keySelectorPairs = {
       "#OrganisationInformation > header > span > div > span > a:nth-child(1)",
    country:
       "#OrganisationInformation > header > span > div > span > a:nth-child(3)",
-   english: "#EnglishRequirements > section",
-   academic: "#AcademicRequirements > section",
+   toefl:
+      "#EnglishRequirements > section > div.CardContents.TOEFLCard.js-CardTOEFL > div > div.ScoreInformationContainer",
+   ielts:
+      "#EnglishRequirements > section > div.CardContents.IELTSCard.js-CardIELTS > div > div.ScoreInformationContainer",
+   gmat:
+      "#AcademicRequirements > section > div.CardContents.GMATCard.js-CardGMAT > div > div.ScoreInformationContainer",
+   gre:
+      "#AcademicRequirements > section > div.CardContents.GRECard.js-CardGRE > div > div.ScoreInformationContainer",
 };
 
 const hrefPairs = {
@@ -42,11 +48,16 @@ const datePairs = {
 
 const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
-// No budget constraint
-// const starturl = "https://www.mastersportal.com/search/#q=di-4|lv-master&start="
-// Free
+const outname = "finfree.csv";
+
+// Free finance
 const starturl =
-   "https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR|tr-[0,500]&start=";
+   "https://www.mastersportal.com/search/#q=di-87|lv-master|rg-1|tc-EUR|tr-[0,500]?";
+// No budget constraint econ
+// const starturl = "https://www.mastersportal.com/search/#q=di-4|lv-master&start="
+// Free econ
+// const starturl =
+//    "https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR|tr-[0,500]&start=";
 
 (async () => {
    const browser = await puppeteer.launch({ headless: true });
@@ -140,5 +151,5 @@ const starturl =
 
    await browser.close();
    const csv = new ObjectsToCsv(data);
-   await csv.toDisk("./data.csv");
+   await csv.toDisk("./" + outname);
 })();
