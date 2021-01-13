@@ -52,7 +52,7 @@ const outname = "finfree.csv";
 
 // Free finance
 const starturl =
-   "https://www.mastersportal.com/search/#q=di-87|lv-master|rg-1|tc-EUR|tr-[0,500]?";
+   "https://www.mastersportal.com/search/#q=di-87|lv-master|rg-1|tc-EUR|tr-[0,500]?start=";
 // No budget constraint econ
 // const starturl = "https://www.mastersportal.com/search/#q=di-4|lv-master&start="
 // Free econ
@@ -77,7 +77,7 @@ const starturl =
    bar1.start(max, 0);
    for (i = 0; i < max; i += 10) {
       bar1.increment(10);
-      const url = `https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR|tr-[0,500]&start=${i}`;
+      const url = starturl + i;
       await page.goto(url);
       await page.waitForSelector("a.Result");
       links.push(
