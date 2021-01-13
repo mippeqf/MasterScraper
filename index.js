@@ -52,7 +52,7 @@ const outname = "finfree.csv";
 
 // Free finance
 const starturl =
-   "https://www.mastersportal.com/search/#q=di-87|lv-master|rg-1|tc-EUR|tr-[0,500]?start=";
+   "https://www.mastersportal.com/search/#q=di-87|lv-master|rg-1|tc-EUR|tr-[0,500]&start=";
 // No budget constraint econ
 // const starturl = "https://www.mastersportal.com/search/#q=di-4|lv-master&start="
 // Free econ
