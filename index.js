@@ -48,16 +48,19 @@ const datePairs = {
 
 const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
-const outname = "finfree.csv";
+const outname = "econpaid.csv";
 
 // Free finance
-const starturl =
-   "https://www.mastersportal.com/search/#q=di-87|lv-master|rg-1|tc-EUR|tr-[0,500]&start=";
+// const starturl =
+//    "https://www.mastersportal.com/search/#q=di-87|lv-master|rg-1|tc-EUR|tr-[0,500]&start=";
 // No budget constraint econ
 // const starturl = "https://www.mastersportal.com/search/#q=di-4|lv-master&start="
 // Free econ
 // const starturl =
 //    "https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR|tr-[0,500]&start=";
+// Econ .5-5k pa
+const starturl =
+   "https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR|tr-[500,1000],[1000,5000]&start=";
 
 (async () => {
    const browser = await puppeteer.launch({ headless: true });
