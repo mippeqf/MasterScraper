@@ -48,7 +48,7 @@ const datePairs = {
 
 const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
-const outname = "econpaid.csv";
+const outname = "finall.csv";
 
 // Free finance
 // const starturl =
@@ -59,13 +59,23 @@ const outname = "econpaid.csv";
 // const starturl =
 //    "https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR|tr-[0,500]&start=";
 // Econ .5-5k pa
+// const starturl =
+//    "https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR|tr-[500,1000],[1000,5000]&start=";
+// Fin All
 const starturl =
-   "https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR|tr-[500,1000],[1000,5000]&start=";
+   "https://www.mastersportal.com/search/#q=lv-master|tc-EUR|di-87&start=";
 
 (async () => {
+   async function restartBrowser() {
+      await context.close();
+      context = await browser.createIncognitoBrowserContext();
+      page = await browser.newPage();
+      // page.setViewport({ width: 1000, height: 1000 });
+   }
+
    const browser = await puppeteer.launch({ headless: true });
-   const page = await browser.newPage();
-   page.setViewport({ width: 1000, height: 1000 });
+   let context = await browser.createIncognitoBrowserContext();
+   let page = await browser.newPage();
    await page.goto(starturl + "00");
    await page.waitForSelector("div.ResultsNum");
    const links = [];
@@ -80,6 +90,9 @@ const starturl =
    bar1.start(max, 0);
    for (i = 0; i < max; i += 10) {
       bar1.increment(10);
+      if (i % 300 == 299) {
+         restartBrowser();
+      }
       const url = starturl + i;
       await page.goto(url);
       await page.waitForSelector("a.Result");
@@ -98,6 +111,9 @@ const starturl =
    bar1.start(links.length, 0);
    for (prog of links) {
       bar1.increment();
+      if (links.indexOf(prog) % 30 == 29) {
+         restartBrowser();
+      }
       await page.goto(prog.link);
       let record = { platformLink: prog.link };
 
