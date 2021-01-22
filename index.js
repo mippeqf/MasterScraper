@@ -71,6 +71,7 @@ const starturl =
       context = await browser.createIncognitoBrowserContext();
       page = await browser.newPage();
       // page.setViewport({ width: 1000, height: 1000 });
+      page.waitForTimeout(3000);
    }
 
    const browser = await puppeteer.launch({ headless: true });
@@ -163,6 +164,19 @@ const starturl =
       } else {
          record.disciplines = ".";
       }
+      if (
+         !!(await page.$(
+            "#QuickFacts > div > div:nth-child(2) > div > div.LabelContainer > div.Title > div > div:nth-child(2) > span.CurrencyContainer"
+         ))
+      ) {
+         record.tuitiontype = await page.$$eval(
+            "#QuickFacts > div > div:nth-child(2) > div > div.LabelContainer > div.Title > div > div:nth-child(2) > span.CurrencyContainer",
+            (res) => res.map((r) => r.innerText.split("/")[1])
+         );
+      } else {
+         record.tuitiontype = ".";
+      }
+
       data.push(record);
    }
 
