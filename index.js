@@ -48,22 +48,19 @@ const datePairs = {
 
 const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
-const outname = "finall.csv";
+const outname = "econall.csv";
 
-// Free finance
-// const starturl =
-//    "https://www.mastersportal.com/search/#q=di-87|lv-master|rg-1|tc-EUR|tr-[0,500]&start=";
-// No budget constraint econ
-// const starturl = "https://www.mastersportal.com/search/#q=di-4|lv-master&start="
-// Free econ
-// const starturl =
-//    "https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR|tr-[0,500]&start=";
-// Econ .5-5k pa
-// const starturl =
-//    "https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR|tr-[500,1000],[1000,5000]&start=";
 // Fin All
+// const starturl =
+//    "https://www.mastersportal.com/search/#q=lv-master|tc-EUR|di-87&start=";
+
+// Econ all
 const starturl =
-   "https://www.mastersportal.com/search/#q=lv-master|tc-EUR|di-87&start=";
+   "https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR&start=";
+
+// Econometrics all
+const starturl =
+   "https://www.mastersportal.com/search/#q=di-110|lv-master|tc-EUR&start=";
 
 (async () => {
    async function restartBrowser() {
@@ -186,3 +183,15 @@ const starturl =
    const csv = new ObjectsToCsv(data);
    await csv.toDisk("./" + outname);
 })();
+
+// Free finance
+// const starturl =
+//    "https://www.mastersportal.com/search/#q=di-87|lv-master|rg-1|tc-EUR|tr-[0,500]&start=";
+// No budget constraint econ
+// const starturl = "https://www.mastersportal.com/search/#q=di-4|lv-master&start="
+// Free econ
+// const starturl =
+//    "https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR|tr-[0,500]&start=";
+// Econ .5-5k pa
+// const starturl =
+//    "https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR|tr-[500,1000],[1000,5000]&start=";
