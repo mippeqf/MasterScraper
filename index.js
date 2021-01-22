@@ -69,14 +69,14 @@ const starturl =
    async function restartBrowser() {
       await context.close();
       context = await browser.createIncognitoBrowserContext();
-      page = await browser.newPage();
-      // page.setViewport({ width: 1000, height: 1000 });
-      page.waitForTimeout(3000);
+      page = await context.newPage();
+      // page.setViewport({ width: 1200, height: 1200 });
+      // page.waitForTimeout(3000);
    }
 
    const browser = await puppeteer.launch({ headless: true });
    let context = await browser.createIncognitoBrowserContext();
-   let page = await browser.newPage();
+   let page = await context.newPage();
    await page.goto(starturl + "00");
    await page.waitForSelector("div.ResultsNum");
    const links = [];
@@ -91,8 +91,8 @@ const starturl =
    bar1.start(max, 0);
    for (i = 0; i < max; i += 10) {
       bar1.increment(10);
-      if (i % 300 == 299) {
-         restartBrowser();
+      if (i % 100 == 0) {
+         await restartBrowser();
       }
       const url = starturl + i;
       await page.goto(url);
@@ -112,8 +112,8 @@ const starturl =
    bar1.start(links.length, 0);
    for (prog of links) {
       bar1.increment();
-      if (links.indexOf(prog) % 30 == 29) {
-         restartBrowser();
+      if (links.indexOf(prog) % 10 === 0) {
+         await restartBrowser();
       }
       await page.goto(prog.link);
       let record = { platformLink: prog.link };
