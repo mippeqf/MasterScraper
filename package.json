@@ -11,6 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "cli-progress": "^3.8.2",
+    "csvtojson": "^2.0.10",
+    "fastest-levenshtein": "^1.0.12",
+    "fuse.js": "^6.4.6",
     "gauge": "^3.0.0",
     "moment": "^2.29.1",
     "ntqdm": "^1.0.0",
