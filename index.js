@@ -48,15 +48,15 @@ const datePairs = {
 
 const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
-const outname = "econall.csv";
+const outname = "metricsall.csv";
 
 // Fin All
 // const starturl =
 //    "https://www.mastersportal.com/search/#q=lv-master|tc-EUR|di-87&start=";
 
 // Econ all
-const starturl =
-   "https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR&start=";
+// const starturl =
+//    "https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR&start=";
 
 // Econometrics all
 const starturl =
