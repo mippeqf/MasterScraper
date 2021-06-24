@@ -48,7 +48,7 @@ const datePairs = {
 
 const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
-const outname = "metricsall.csv";
+const outname = "econNA.csv";
 
 // Fin All
 // const starturl =
@@ -59,8 +59,20 @@ const outname = "metricsall.csv";
 //    "https://www.mastersportal.com/search/#q=di-4|lv-master|tc-EUR&start=";
 
 // Econometrics all
+// const starturl =
+//    "https://www.mastersportal.com/search/#q=di-110|lv-master|tc-EUR&start=";
+
+// Statistics all
+// const starturl =
+//    "https://www.mastersportal.com/search/#q=di-227|lv-master|tc-EUR&start=";
+
+// // Data science all
+// const starturl =
+//    "https://www.mastersportal.com/search/#q=di-282|lv-master|tc-EUR&start=";
+
+// Econ North America
 const starturl =
-   "https://www.mastersportal.com/search/#q=di-110|lv-master|tc-EUR&start=";
+   "https://www.mastersportal.com/search/#q=di-4|lv-master|rg-11?section=recommendations";
 
 (async () => {
    async function restartBrowser() {
